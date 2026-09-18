@@ -20,6 +20,10 @@ def get_summary(
     db: Session = Depends(get_db),
 ):
     query = db.query(Expense)
+    # Budgets are monthly limits, so they are always compared against one
+    # month's spending: the requested month, or the current one. Comparing them
+    # with all-time totals raised alerts that grew forever.
+    budget_month = datetime.now()
     if month:
         try:
             dt = datetime.strptime(month, "%Y-%m")
@@ -27,6 +31,7 @@ def get_summary(
                 extract("year", Expense.date) == dt.year,
                 extract("month", Expense.date) == dt.month,
             )
+            budget_month = dt
         except ValueError:
             pass
 
@@ -44,9 +49,23 @@ def get_summary(
         for cat, amount in sorted(category_totals.items(), key=lambda x: -x[1])
     ]
 
+    month_rows = (
+        db.query(Expense.category, func.sum(Expense.total))
+        .filter(
+            extract("year", Expense.date) == budget_month.year,
+            extract("month", Expense.date) == budget_month.month,
+        )
+        .group_by(Expense.category)
+        .all()
+    )
+    month_totals: dict[str, float] = {}
+    for cat, spent in month_rows:
+        key = cat or "Other"
+        month_totals[key] = month_totals.get(key, 0) + (spent or 0)
+
     budgets = {b.category: b.monthly_limit for b in db.query(Budget).all()}
     budget_alerts = []
-    for cat, spent in category_totals.items():
+    for cat, spent in month_totals.items():
         if cat in budgets:
             limit = budgets[cat]
             pct = (spent / limit) * 100 if limit > 0 else 0

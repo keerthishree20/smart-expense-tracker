@@ -1,10 +1,10 @@
 import json
-import os
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from core.database import get_db, Expense
+from core.llm_extract import LLMUnavailable, complete
 
 router = APIRouter()
 
@@ -76,15 +76,10 @@ Give exactly 4-5 bullet points. Be specific with numbers. Include:
 Keep each point under 20 words. No markdown formatting."""
 
     try:
-        from groq import AsyncGroq
-        client = AsyncGroq(api_key=os.getenv("GROQ_API_KEY"))
-        response = await client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.3,
-            max_tokens=300,
-        )
-        return {"summary": response.choices[0].message.content.strip()}
+        summary = await complete([{"role": "user", "content": prompt}], temperature=0.3, max_tokens=2048)
+        if not summary:
+            raise LLMUnavailable("empty reply")
+        return {"summary": summary}
     except Exception:
         tips = []
         top_cat = max(categories, key=categories.get) if categories else "Unknown"

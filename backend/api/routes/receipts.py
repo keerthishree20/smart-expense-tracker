@@ -6,7 +6,7 @@ from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from core.ocr import extract_text
-from core.llm_extract import extract_receipt_data
+from core.llm_extract import LLMUnavailable, extract_receipt_data
 from core.database import get_db, Expense
 
 router = APIRouter()
@@ -32,7 +32,10 @@ async def scan_receipt(file: UploadFile = File(...), db: Session = Depends(get_d
     if not ocr_text:
         raise HTTPException(422, "Could not extract text from receipt")
 
-    extracted = await extract_receipt_data(ocr_text)
+    try:
+        extracted = await extract_receipt_data(ocr_text)
+    except LLMUnavailable as exc:
+        raise HTTPException(503, str(exc)) from exc
 
     expense_date = date.today()
     if extracted.get("date"):

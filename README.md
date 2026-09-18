@@ -2,7 +2,7 @@
 
 ![Next.js](https://img.shields.io/badge/Next.js_14-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![Groq](https://img.shields.io/badge/Groq_Llama_3.3-F55036?style=for-the-badge&logo=groq&logoColor=white)
+![Groq](https://img.shields.io/badge/Groq-F55036?style=for-the-badge&logo=groq&logoColor=white)
 ![Tesseract](https://img.shields.io/badge/Tesseract_OCR-4285F4?style=for-the-badge&logo=google&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 ![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
@@ -14,12 +14,12 @@
 ## How It Works
 
 ```
-📸 Snap Receipt Photo → 🔍 Tesseract OCR → 🤖 Groq Llama 3.3 → 📊 Structured Data → 💰 Dashboard
+📸 Snap Receipt Photo → 🔍 Tesseract OCR → 🤖 Groq LLM → 📊 Structured Data → 💰 Dashboard
 ```
 
 1. **Upload/snap** a receipt image
 2. **Tesseract OCR** extracts raw text from the image
-3. **Groq Llama 3.3** parses the OCR text into structured JSON (merchant, items, total, date, category)
+3. **A Groq-hosted LLM** parses the OCR text into structured JSON (merchant, items, total, date, category)
 4. **Auto-categorized** expense is saved to the database
 5. **Visual dashboard** shows spending trends, category breakdown, and budget alerts
 
@@ -44,7 +44,7 @@
 | Icons | Lucide React |
 | Backend | FastAPI, Python 3.10+ |
 | OCR Engine | Tesseract OCR + Pillow (image preprocessing) |
-| AI/LLM | Groq Cloud (Llama 3.3 70B) |
+| AI/LLM | Groq Cloud (`openai/gpt-oss-120b` by default, set with `GROQ_MODEL`) |
 | Database | SQLite (local) / PostgreSQL (production) |
 | ORM | SQLAlchemy |
 
@@ -84,7 +84,8 @@ Open [http://localhost:3001](http://localhost:3001) in your browser.
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `GROQ_API_KEY` | Groq Cloud API key for Llama 3.3 | Yes (for receipt scanning) |
+| `GROQ_API_KEY` | Groq Cloud API key | Yes (for receipt scanning) |
+| `GROQ_MODEL` | Groq model id, default `openai/gpt-oss-120b`. Change it when Groq retires a model | No |
 | `DATABASE_URL` | Database connection string | No (defaults to SQLite) |
 | `NEXT_PUBLIC_API_URL` | Backend API URL | No (defaults to `http://localhost:8002`) |
 
@@ -112,7 +113,7 @@ smart-expense-tracker/
 │   ├── requirements.txt
 │   ├── core/
 │   │   ├── ocr.py               # Tesseract OCR + image preprocessing
-│   │   ├── llm_extract.py       # Groq Llama 3.3 receipt parsing
+│   │   ├── llm_extract.py       # Groq receipt parsing
 │   │   └── database.py          # SQLAlchemy models + DB setup
 │   └── api/routes/
 │       ├── receipts.py          # Receipt upload + scan endpoint
