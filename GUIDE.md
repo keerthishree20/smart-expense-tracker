@@ -204,9 +204,17 @@ Interactive docs are at http://localhost:8002/docs.
   `openai/gpt-oss-120b`. The original `llama-3.3-70b-versatile` was retired, which broke scanning
   until 2026-09-18. When the current model is retired, scanning returns a 503 naming it. Change
   `GROQ_MODEL` in `backend/.env`, no code change needed.
-- **The live model path is not verified.** It was fixed and tested with a stubbed model, because no
-  Groq key was available. Run one real scan after setting your key.
-- **No automated tests.**
+- **Live extraction verified on 2026-09-18** against Groq with `openai/gpt-oss-120b`: a sample
+  receipt's merchant, items, subtotal, tax, total and category all came back correct. The OCR step
+  was not part of that run, because Tesseract was not installed on the test machine.
+- **Tests:** `backend/tests/` has 13 tests covering expenses, the summary, budget alerts, receipt
+  scanning with OCR and the model stubbed, and the model wrapper's errors. They need no key and no
+  network:
+  ```bash
+  cd backend
+  .venv/bin/pip install -r requirements-dev.txt
+  .venv/bin/python -m pytest
+  ```
 - **CORS is wide open** with `allow_origins=["*"]`. Fine locally, but restrict it before deploying.
 - **Not deployed.**
 
