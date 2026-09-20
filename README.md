@@ -1,5 +1,7 @@
 # SpendLens - Smart Expense Tracker
 
+[![tests](https://github.com/keerthishree20/smart-expense-tracker/actions/workflows/tests.yml/badge.svg)](https://github.com/keerthishree20/smart-expense-tracker/actions/workflows/tests.yml)
+
 ![Next.js](https://img.shields.io/badge/Next.js_14-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![Groq](https://img.shields.io/badge/Groq-F55036?style=for-the-badge&logo=groq&logoColor=white)
