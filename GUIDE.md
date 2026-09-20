@@ -376,6 +376,7 @@ Docs: http://localhost:8002/docs
 | `GROQ_API_KEY` | `backend/.env` | none | needed for scanning and the AI summary |
 | `GROQ_MODEL` | `backend/.env` | `openai/gpt-oss-120b` | change when Groq retires it |
 | `DATABASE_URL` | `backend/.env` | `sqlite:///./expenses.db` | PostgreSQL works too |
+| `CORS_ORIGINS` | `backend/.env` | empty | extra allowed origins, comma separated; localhost always works |
 | `NEXT_PUBLIC_API_URL` | `frontend/.env.local` | `http://localhost:8002` | |
 
 ---
@@ -402,7 +403,9 @@ installed on that machine, so OCR itself was not part of the live run.
 
 ## 21. Known Issues
 
-- **CORS is wide open** (`allow_origins=["*"]`). Fine locally; restrict before deploying.
+- **CORS is closed by default now.** Any localhost port is allowed; any other origin must be listed in
+  `CORS_ORIGINS` (comma separated) in `backend/.env`. The API has no authentication, so a wildcard would
+  let any site a user visits read their expenses.
 - **Not deployed.**
 
 ---

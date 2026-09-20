@@ -11,9 +11,15 @@ from api.routes import receipts, expenses, dashboard, insights, export
 
 app = FastAPI(title="Smart Expense Tracker API", version="1.0.0")
 
+# Any localhost port is allowed so the frontend works on whichever port it
+# picks. Anything else has to be named in CORS_ORIGINS (comma separated),
+# because this API has no authentication: with "*" any site a user visits
+# could read their expenses or post to their scanner.
+_extra_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_extra_origins,
     allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_methods=["*"],
     allow_headers=["*"],
